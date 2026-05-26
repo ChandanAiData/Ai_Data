@@ -653,6 +653,84 @@
       align-items: start;
     }
 
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      place-items: center;
+      padding: 22px;
+      background:
+        linear-gradient(135deg, rgba(8, 31, 51, 0.86), rgba(15, 118, 110, 0.74)),
+        linear-gradient(135deg, #081f33, #102a43);
+    }
+
+    .login-screen.open {
+      display: grid;
+    }
+
+    .login-card {
+      width: min(440px, 100%);
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.52);
+      border-radius: 14px;
+      box-shadow: 0 26px 80px rgba(0, 0, 0, 0.26);
+      padding: 26px;
+    }
+
+    .login-card h2 {
+      margin: 16px 0 6px;
+      font-size: 28px;
+    }
+
+    .login-card p {
+      margin: 0 0 18px;
+      color: var(--muted);
+    }
+
+    .login-logo {
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #2dd4bf, #e8b86d);
+      color: #082f49;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      overflow: hidden;
+    }
+
+    .login-help {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      background: #f6f9fc;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border-radius: 999px;
+      padding: 5px 10px;
+      background: #e8f7f5;
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .userbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .logo-preview {
       width: 118px;
       height: 118px;
@@ -837,6 +915,31 @@
   </style>
 </head>
 <body>
+  <div class="login-screen open" id="loginScreen">
+    <form class="login-card" id="loginForm">
+      <div class="login-logo" id="loginLogo">SD</div>
+      <h2>Welcome Back</h2>
+      <p>Sign in to open your StoreDesk control panel.</p>
+      <div class="form-grid">
+        <div class="field full">
+          <label for="loginUsername">Username</label>
+          <input id="loginUsername" autocomplete="username" required>
+        </div>
+        <div class="field full">
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" required>
+        </div>
+        <div class="field full">
+          <button class="btn primary" type="submit">Login</button>
+        </div>
+      </div>
+      <div class="login-help">
+        Default admin: <strong>admin</strong> / <strong>admin123</strong><br>
+        Default staff: <strong>staff</strong> / <strong>staff123</strong>
+      </div>
+    </form>
+  </div>
+
   <div class="app-shell">
     <aside class="sidebar">
       <div class="brand">
@@ -880,6 +983,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.72l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2Z"/><circle cx="12" cy="12" r="3"/></svg>
           Settings
         </button>
+        <button data-view="users" data-admin-only="true" title="Users">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6"/><path d="M23 11h-6"/></svg>
+          Users
+        </button>
       </nav>
 
       <div class="sidebar-footer">
@@ -894,6 +1001,13 @@
           <p id="pageSubtitle">Live overview of stock, revenue, and store activity.</p>
         </div>
         <div class="actions">
+          <div class="userbar">
+            <span class="role-badge" id="currentUserBadge">Guest</span>
+            <button class="btn" id="logoutBtn" title="Logout" type="button">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+              Logout
+            </button>
+          </div>
           <button class="btn" id="exportBtn" title="Export report PDF">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
             Export
@@ -1155,6 +1269,49 @@
             </div>
           </div>
         </section>
+
+        <section id="users" class="view">
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-head"><h3>User Control Panel</h3></div>
+              <form class="panel-body form-grid" id="userForm">
+                <input id="userId" type="hidden">
+                <div class="field">
+                  <label for="userName">Name</label>
+                  <input id="userName" required>
+                </div>
+                <div class="field">
+                  <label for="userUsername">Username</label>
+                  <input id="userUsername" required>
+                </div>
+                <div class="field">
+                  <label for="userPassword">Password</label>
+                  <input id="userPassword" required>
+                </div>
+                <div class="field">
+                  <label for="userRole">Role</label>
+                  <select id="userRole">
+                    <option value="staff">Staff User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <div class="field full actions">
+                  <button class="btn primary" type="submit">Save User</button>
+                  <button class="btn" id="clearUserFormBtn" type="button">Clear</button>
+                </div>
+              </form>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><h3>Login Users</h3></div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Actions</th></tr></thead>
+                  <tbody id="userRows"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
       </section>
     </main>
   </div>
@@ -1283,6 +1440,10 @@
         email: 'hello@storedesk.in',
         logoData: ''
       },
+      users: [
+        { id: 'u-1', name: 'Administrator', username: 'admin', password: 'admin123', role: 'admin' },
+        { id: 'u-2', name: 'Staff User', username: 'staff', password: 'staff123', role: 'staff' }
+      ],
       activity: [
         { text: 'Sale INV-1002 completed', meta: '1 item sold' },
         { text: 'Stock received for Cold Pressed Oil 1L', meta: '10 units added' },
@@ -1292,6 +1453,8 @@
 
     let state = JSON.parse(localStorage.getItem('storeDeskData') || 'null') || seed;
     state.shop = state.shop || { ...seed.shop };
+    state.users = state.users?.length ? state.users : [...seed.users];
+    let currentUser = JSON.parse(sessionStorage.getItem('storeDeskSession') || 'null');
     let saleDraft = [{ productId: state.products[0]?.id || '', qty: 1 }];
     let selectedInvoiceId = state.sales[0]?.id || '';
 
@@ -1303,7 +1466,8 @@
       purchases: ['Purchases', 'Receive stock and record supplier costs.'],
       suppliers: ['Suppliers', 'Maintain vendor contacts for ordering.'],
       reports: ['Reports', 'Review stock value, revenue, and operating totals.'],
-      settings: ['Shop Settings', 'Update logo, shop identity, tax, address, and contact details.']
+      settings: ['Shop Settings', 'Update logo, shop identity, tax, address, and contact details.'],
+      users: ['Users', 'Manage admin and staff logins for this store.']
     };
 
     const $ = (selector) => document.querySelector(selector);
@@ -1347,8 +1511,28 @@
 
     function renderBrand() {
       $('#brandLogo').innerHTML = logoMarkup();
+      $('#loginLogo').innerHTML = logoMarkup();
       $('#brandName').textContent = state.shop.name || 'StoreDesk';
       $('#brandSubtitle').textContent = state.shop.gst ? `GST ${state.shop.gst}` : 'Retail operations';
+    }
+
+    function isAdmin() {
+      return currentUser?.role === 'admin';
+    }
+
+    function canOpenView(name) {
+      return isAdmin() || !['settings', 'users'].includes(name);
+    }
+
+    function updateAuthUi() {
+      const loggedIn = Boolean(currentUser);
+      $('#loginScreen').classList.toggle('open', !loggedIn);
+      $('#currentUserBadge').textContent = loggedIn ? `${currentUser.name} · ${currentUser.role}` : 'Guest';
+      $$('[data-admin-only="true"]').forEach((el) => {
+        el.style.display = isAdmin() ? '' : 'none';
+      });
+      const active = $('.view.active')?.id;
+      if (loggedIn && active && !canOpenView(active)) setView('dashboard');
     }
 
     function escapeHtml(value) {
@@ -1707,6 +1891,30 @@
       $('#shopPreviewContact').textContent = `Contact: ${state.shop.contact || 'Not set'}`;
     }
 
+    function clearUserForm() {
+      $('#userId').value = '';
+      $('#userName').value = '';
+      $('#userUsername').value = '';
+      $('#userPassword').value = '';
+      $('#userRole').value = 'staff';
+    }
+
+    function renderUsers() {
+      $('#userRows').innerHTML = state.users.map((user) => `
+        <tr>
+          <td><strong>${escapeHtml(user.name)}</strong></td>
+          <td>${escapeHtml(user.username)}</td>
+          <td><span class="status ${user.role === 'admin' ? 'ok' : 'low'}">${user.role}</span></td>
+          <td>
+            <div class="row-actions">
+              <button class="icon-btn" title="Edit user" data-edit-user="${user.id}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+              <button class="icon-btn" title="Delete user" data-delete-user="${user.id}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
     function createReportPdfBlob() {
       const t = totals();
       const rows = reportRows();
@@ -1804,9 +2012,15 @@
       renderSuppliers();
       renderReports();
       renderShopSettings();
+      renderUsers();
+      updateAuthUi();
     }
 
     function setView(name) {
+      if (!canOpenView(name)) {
+        toast('Admin access required');
+        return;
+      }
       $$('.view').forEach((view) => view.classList.toggle('active', view.id === name));
       $$('.nav button').forEach((button) => button.classList.toggle('active', button.dataset.view === name));
       $('#pageTitle').textContent = views[name][0];
@@ -1814,6 +2028,7 @@
       if (name === 'sales') renderSale();
       if (name === 'invoices') renderInvoices();
       if (name === 'settings') renderShopSettings();
+      if (name === 'users') renderUsers();
     }
 
     function openProduct(id) {
@@ -1851,9 +2066,26 @@
       if (button.id === 'addProductBtn') openProduct();
       if (button.id === 'addSupplierBtn') openSupplier();
       if (button.id === 'quickSaleBtn') setView('sales');
+      if (button.id === 'logoutBtn') {
+        currentUser = null;
+        sessionStorage.removeItem('storeDeskSession');
+        updateAuthUi();
+        toast('Logged out');
+      }
+      if (button.id === 'clearUserFormBtn') clearUserForm();
       if (button.dataset.closeModal !== undefined) button.closest('.modal-backdrop').classList.remove('open');
       if (button.dataset.editProduct) openProduct(button.dataset.editProduct);
       if (button.dataset.editSupplier) openSupplier(button.dataset.editSupplier);
+      if (button.dataset.editUser) {
+        const user = state.users.find((item) => item.id === button.dataset.editUser);
+        if (user) {
+          $('#userId').value = user.id;
+          $('#userName').value = user.name;
+          $('#userUsername').value = user.username;
+          $('#userPassword').value = user.password;
+          $('#userRole').value = user.role;
+        }
+      }
       if (button.dataset.removeLine) {
         saleDraft.splice(Number(button.dataset.removeLine), 1);
         if (!saleDraft.length && state.products[0]) saleDraft.push({ productId: state.products[0].id, qty: 1 });
@@ -1871,6 +2103,28 @@
         renderAll();
         toast('Supplier deleted');
       }
+      if (button.dataset.deleteUser && confirm('Delete this user?')) {
+        if (state.users.length <= 1) return toast('Keep at least one user');
+        if (button.dataset.deleteUser === currentUser?.id) return toast('You cannot delete your active login');
+        state.users = state.users.filter((user) => user.id !== button.dataset.deleteUser);
+        save();
+        renderAll();
+        toast('User deleted');
+      }
+    });
+
+    $('#loginForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const username = $('#loginUsername').value.trim();
+      const password = $('#loginPassword').value;
+      const user = state.users.find((item) => item.username === username && item.password === password);
+      if (!user) return toast('Invalid username or password');
+      currentUser = { id: user.id, name: user.name, username: user.username, role: user.role };
+      sessionStorage.setItem('storeDeskSession', JSON.stringify(currentUser));
+      $('#loginForm').reset();
+      updateAuthUi();
+      setView('dashboard');
+      toast(`Welcome, ${currentUser.name}`);
     });
 
     $('#addSaleLine').addEventListener('click', () => {
@@ -1944,6 +2198,29 @@
       $('#supplierModal').classList.remove('open');
       renderAll();
       toast('Supplier saved');
+    });
+
+    $('#userForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!isAdmin()) return toast('Admin access required');
+      const id = $('#userId').value || uid('u');
+      const username = $('#userUsername').value.trim();
+      const duplicate = state.users.find((user) => user.username === username && user.id !== id);
+      if (duplicate) return toast('Username already exists');
+      const user = {
+        id,
+        name: $('#userName').value.trim(),
+        username,
+        password: $('#userPassword').value,
+        role: $('#userRole').value
+      };
+      const existing = state.users.findIndex((item) => item.id === id);
+      if (existing >= 0) state.users[existing] = user;
+      else state.users.push(user);
+      save();
+      clearUserForm();
+      renderAll();
+      toast('User saved');
     });
 
     $('#purchaseForm').addEventListener('submit', (event) => {
